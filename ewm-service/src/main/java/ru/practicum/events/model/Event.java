@@ -27,7 +27,7 @@ public class Event {
     private Category category;
 
     @Column(name = "confirmed_requests")
-    private Long confirmedRequests;
+    private Long confirmedRequests = 0L;
 
     @Column(name = "created_on")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

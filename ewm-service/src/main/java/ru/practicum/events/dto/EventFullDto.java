@@ -19,7 +19,7 @@ public class EventFullDto {
 
     private String annotation;
 
-    private CategoryDto categoryDto;
+    private CategoryDto category;
 
     private Long confirmedRequests;
 

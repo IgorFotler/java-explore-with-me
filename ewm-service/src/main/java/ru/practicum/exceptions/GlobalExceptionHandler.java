@@ -17,8 +17,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ApiError handleConflictException(ConflictException de) {
-        return ApiError.builder().errorCode(HttpStatus.CONFLICT.value()).description(de.getMessage()).build();
+    public ApiError handleConflictException(ConflictException ce) {
+        return ApiError.builder().errorCode(HttpStatus.CONFLICT.value()).description(ce.getMessage()).build();
     }
 
     @ExceptionHandler

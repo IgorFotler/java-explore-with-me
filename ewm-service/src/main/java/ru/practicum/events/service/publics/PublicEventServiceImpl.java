@@ -30,7 +30,7 @@ public class PublicEventServiceImpl implements PublicEventService {
 
     private final EventRepository eventRepository;
     private final RequestRepository requestRepository;
-    StatsClient statsClient;
+    private final StatsClient statsClient;
     private final String appName = "ewm-service";
 
     @Override
