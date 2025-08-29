@@ -66,6 +66,6 @@ public class Event {
     @Column
     private String title;
 
-    @Column
-    private Long views;
+    @Column(nullable = false)
+    private Long views = 0L;
 }

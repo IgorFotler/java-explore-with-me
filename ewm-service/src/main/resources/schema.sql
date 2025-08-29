@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS events (
     request_moderation boolean NOT NULL DEFAULT true,
     state VARCHAR(15) NOT NULL CHECK (state IN ('PENDING', 'PUBLISHED', 'CANCELED')),
     title VARCHAR(120),
-    views BIGINT NOT NULL DEFAULT 0
+    views BIGINT DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS requests (
