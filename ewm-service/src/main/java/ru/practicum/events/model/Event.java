@@ -50,7 +50,7 @@ public class Event {
     private Boolean paid = false;
 
     @Column(name = "participant_limit")
-    private Integer participantLimit;
+    private Long participantLimit;
 
     @Column(name = "published_on")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

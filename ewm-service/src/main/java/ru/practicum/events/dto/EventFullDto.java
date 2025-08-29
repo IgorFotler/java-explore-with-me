@@ -37,7 +37,7 @@ public class EventFullDto {
 
     private Boolean paid = false;
 
-    private Integer participantLimit;
+    private Long participantLimit;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime publishedOn;

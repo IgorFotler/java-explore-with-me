@@ -149,8 +149,8 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         List<ParticipationRequest> confirmedRequests = new ArrayList<>();
         List<ParticipationRequest> rejectedRequests = new ArrayList<>();
 
-        int limit = event.getParticipantLimit();
-        long confirmed = event.getConfirmedRequests();
+        Long limit = event.getParticipantLimit();
+        Long confirmed = event.getConfirmedRequests();
 
         if (status.equals(RequestStatus.CONFIRMED)) {
             for (ParticipationRequest request : requests) {
