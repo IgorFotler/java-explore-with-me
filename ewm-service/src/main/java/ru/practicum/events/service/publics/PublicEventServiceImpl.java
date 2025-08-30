@@ -1,10 +1,13 @@
 package ru.practicum.events.service.publics;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.StatsClient;
 import ru.practicum.dto.EndpointHitDto;
@@ -107,12 +110,7 @@ public class PublicEventServiceImpl implements PublicEventService {
         }
         saveHit(request);
 
-        LocalDateTime start = (event.getPublishedOn() != null ? event.getPublishedOn() : event.getCreatedOn())
-                .minusYears(100);
-        LocalDateTime end = LocalDateTime.now();
-        String uri = "/events/" + event.getId();
-
-        Long views = getViews(List.of(uri), start, end, true).getOrDefault(uri, 0L);
+        Long views = getCountViews(id);
         Long confirmed = requestRepository.requestsCountByEventAndStatusId(event.getId(), RequestStatus.CONFIRMED);
         return EventMapper.convertToEventFullDto(event, views, confirmed);
     }
@@ -127,9 +125,39 @@ public class PublicEventServiceImpl implements PublicEventService {
         statsClient.create(endpointHitDto);
     }
 
+    private Long getCountViews(Long eventId) {
+        LocalDateTime start = LocalDateTime.now().minusYears(100);
+        LocalDateTime end = LocalDateTime.now();
+        String uri = "/events/" + eventId;
+        try {
+            ResponseEntity<Object> response = statsClient.getStats(start, end, List.of(uri), true);
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                List<ViewStatsDto> views = parseStatsResponse(response.getBody());
+                return views.isEmpty() ? 0L : views.getFirst().getHits();
+            }
+        } catch (Exception e) {
+            throw new BadRequestException("Ошибка получения статистики!");
+        }
+        return 0L;
+    }
+
+    private List<ViewStatsDto> parseStatsResponse(Object body) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.readValue(
+                    mapper.writeValueAsString(body),
+                    new TypeReference<>() {
+                    }
+            );
+        } catch (Exception e) {
+            return List.of();
+        }
+    }
+
     private Map<String, Long> getViews(Collection<String> uris, LocalDateTime start, LocalDateTime end, boolean unique) {
         try {
-            List<ViewStatsDto> stats = (List<ViewStatsDto>) statsClient.getStats(start, end, new ArrayList<>(uris), unique);
+            ResponseEntity<Object> viewStats = statsClient.getStats(start, end, new ArrayList<>(uris), unique);
+            List<ViewStatsDto> stats = parseStatsResponse(viewStats);
             Map<String, Long> map = new HashMap<>();
             for (ViewStatsDto s : stats) {
                 map.merge(s.getUri(), s.getHits(), Long::sum);

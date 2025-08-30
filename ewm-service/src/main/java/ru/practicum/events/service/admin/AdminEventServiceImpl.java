@@ -4,10 +4,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import ru.practicum.category.repository.CategoryRepository;
 import ru.practicum.events.dto.EventFullDto;
 import ru.practicum.events.dto.UpdateEventAdminRequest;
 import ru.practicum.events.mapper.EventMapper;
 import ru.practicum.events.model.Event;
+import ru.practicum.events.model.Location;
 import ru.practicum.events.model.State;
 import ru.practicum.events.model.StateAction;
 import ru.practicum.events.repository.EventRepository;
@@ -22,6 +24,7 @@ import java.util.List;
 public class AdminEventServiceImpl implements AdminEventService {
 
     private final EventRepository eventRepository;
+    private final CategoryRepository categoryRepository;
 
     @Override
     public List<EventFullDto> searchEvents(
@@ -81,6 +84,40 @@ public class AdminEventServiceImpl implements AdminEventService {
                 case REJECT_EVENT -> event.setState(State.CANCELED);
                 default -> throw new ConflictException("Некорректный статус");
             }
+        }
+
+        if (updateRequest.getAnnotation() != null) {
+            event.setAnnotation(updateRequest.getAnnotation());
+        }
+        if (updateRequest.getCategoryId() != null) {
+            event.setCategory(categoryRepository.findById(updateRequest.getCategoryId()).get());
+        }
+        if (updateRequest.getDescription() != null) {
+            event.setDescription(updateRequest.getDescription());
+        }
+        if (updateRequest.getEventDate() != null) {
+            if (updateRequest.getEventDate().isBefore(LocalDateTime.now().plusHours(1))) {
+                throw new ConflictException("Event date must be at least 1 hour from now");
+            }
+            event.setEventDate(updateRequest.getEventDate());
+        }
+        if (updateRequest.getLocation() != null) {
+            event.setLocation(new Location(
+                    updateRequest.getLocation().getLat(),
+                    updateRequest.getLocation().getLon()
+            ));
+        }
+        if (updateRequest.getPaid() != null) {
+            event.setPaid(updateRequest.getPaid());
+        }
+        if (updateRequest.getParticipantLimit() != null) {
+            event.setParticipantLimit(updateRequest.getParticipantLimit());
+        }
+        if (updateRequest.getRequestModeration() != null) {
+            event.setRequestModeration(updateRequest.getRequestModeration());
+        }
+        if (updateRequest.getTitle() != null) {
+            event.setTitle(updateRequest.getTitle());
         }
 
         Event updatedEvent = eventRepository.save(event);
