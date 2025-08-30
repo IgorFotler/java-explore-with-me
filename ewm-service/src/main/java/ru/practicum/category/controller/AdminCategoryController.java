@@ -36,9 +36,9 @@ public class AdminCategoryController {
     }
 
     @PatchMapping("/{catId}")
-    public CategoryDto update(@RequestBody @Valid CategoryDto categoryDto) {
+    public CategoryDto update(@PathVariable @Positive Long catId, @RequestBody @Valid CategoryDto categoryDto) {
         log.info("Получен HTTP-запрос на обновление категории: {}", categoryDto);
-        CategoryDto updatedCategory = adminCategoryService.update(categoryDto);
+        CategoryDto updatedCategory = adminCategoryService.update(catId, categoryDto);
         log.info("Успешно обработан HTTP-запрос на обновление категории: {}", categoryDto);
         return updatedCategory;
     }

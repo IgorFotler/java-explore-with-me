@@ -9,5 +9,5 @@ public interface AdminCategoryService {
 
     void delete(Long catId);
 
-    CategoryDto update(CategoryDto categoryDto);
+    CategoryDto update(Long catId, CategoryDto categoryDto);
 }
