@@ -43,11 +43,9 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 
     @Override
     public EventFullDto create(Long userId, NewEventDto newEventDto) {
-        User initiator = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователь с id = " + userId + " не найден"));
+        User initiator = checkAndGetUserById(userId);
 
-        Category category = categoryRepository.findById(newEventDto.getCategory())
-                .orElseThrow(() -> new NotFoundException("Категория с id = " + userId + " не найдена"));
+        Category category = checkAndGetCategoryById(newEventDto.getCategory());
 
         validateDate(newEventDto.getEventDate());
 
@@ -64,8 +62,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
 
     @Override
     public List<EventShortDto> getUserEvents(Long userId, int from, int size) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователь с id = " + userId + " не найден"));
+        User user = checkAndGetUserById(userId);
         PageRequest pageRequest = PageRequest.of(from / size, size);
 
         return eventRepository.findAllByInitiatorId(userId, pageRequest)
@@ -94,8 +91,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         }
 
         if (updateRequest.getCategoryId() != null) {
-            Category category = categoryRepository.findById(updateRequest.getCategoryId())
-                    .orElseThrow(() -> new NotFoundException("Категория с id = " + updateRequest.getCategoryId() + " не найдена"));
+            Category category = checkAndGetCategoryById(updateRequest.getCategoryId());
             event.setCategory(category);
         }
 
@@ -181,8 +177,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     }
 
     private Event validateId(Long userId, Long eventId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователь с id = " + userId + " не найден"));
+        User user = checkAndGetUserById(userId);
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Событие с id = " + eventId + " не найден"));
 
@@ -196,5 +191,15 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         if (date.isBefore(LocalDateTime.now().plusHours(2))) {
             throw new ConflictException("Событие должно начинаться не раньше чем через два часа после создания");
         }
+    }
+
+    private User checkAndGetUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь с id = " + userId + " не найден"));
+    }
+
+    private Category checkAndGetCategoryById(Long catId) {
+        return categoryRepository.findById(catId)
+                .orElseThrow(() -> new NotFoundException("Категория с id = " + catId + " не найдена"));
     }
 }

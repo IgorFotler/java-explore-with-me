@@ -8,7 +8,8 @@ import ru.practicum.users.model.User;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity

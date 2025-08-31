@@ -56,7 +56,7 @@ public class AdminCategoryServiceImpl implements AdminCategoryService {
         }
 
         if (categoryRepository.existsByName(categoryDto.getName())) {
-            throw new ConflictException("Категория с таким именем уже существует");
+            throw new ConflictException("Категория с name = " + categoryDto.getName() + " уже существует");
         }
 
         category.setName(categoryDto.getName());

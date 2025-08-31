@@ -29,8 +29,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public ParticipationRequestDto create(Long userId, Long eventId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователь с id = " + userId + " не найден"));
+        User user = checkAndGetUserById(userId);
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Событие с id = " + eventId + " не найдено"));
 
@@ -88,8 +87,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public List<ParticipationRequestDto> getUserRequests(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователь с id = " + userId + " не найден"));
+        User user = checkAndGetUserById(userId);
 
         return requestRepository.findByRequesterId(userId).stream()
                 .map(RequestMapper::convertToParticipationRequestDto)
@@ -98,8 +96,7 @@ public class RequestServiceImpl implements RequestService {
 
     @Override
     public ParticipationRequestDto cancelUserRequest(Long userId, Long requestId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователь с id = " + userId + " не найден"));
+        User user = checkAndGetUserById(userId);
         ParticipationRequest participationRequest = requestRepository.findById(requestId)
                 .orElseThrow(() -> new NotFoundException("Запрос с id = " + requestId + " не найден"));
 
@@ -108,5 +105,10 @@ public class RequestServiceImpl implements RequestService {
         }
         participationRequest.setStatus(RequestStatus.CANCELED);
         return RequestMapper.convertToParticipationRequestDto(requestRepository.save(participationRequest));
+    }
+
+    private User checkAndGetUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь с id = " + userId + " не найден"));
     }
 }
