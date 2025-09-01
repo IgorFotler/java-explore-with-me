@@ -2,7 +2,7 @@ server:
   port: 8080
 
 stats-server:
-  url: http://localhost:9090
+  url: http://stats-server:9090
 
 app:
   name: ewm-service
@@ -22,7 +22,7 @@ spring:
     init:
       mode: always
   datasource:
-    url: jdbc:postgresql://localhost:5432/main-server
+    url: jdbc:postgresql://ewm-service:6541/ewm-db
     username: postgres
     password: password
     driverClassName: org.postgresql.Driver

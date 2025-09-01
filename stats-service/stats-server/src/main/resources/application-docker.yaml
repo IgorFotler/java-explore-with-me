@@ -1,12 +1,9 @@
 server:
-  port: 8080
+  port: 9090
 
-stats-server:
-  url: http://localhost:9090
-
-app:
-  name: ewm-service
 spring:
+  main:
+    allow-bean-definition-overriding: true
   jpa:
     hibernate:
       ddl-auto: none
@@ -22,7 +19,7 @@ spring:
     init:
       mode: always
   datasource:
-    url: jdbc:postgresql://localhost:5432/main-server
+    url: jdbc:postgresql://stats-server:6542/stats-db
     username: postgres
     password: password
     driverClassName: org.postgresql.Driver
